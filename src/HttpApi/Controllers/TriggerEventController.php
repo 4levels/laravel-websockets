@@ -30,7 +30,7 @@ class TriggerEventController extends Controller
 
             app(StatisticsLogger::class)->save();
 
-            StatisticsLogger::apiMessage($request->appId);
+            app(StatisticsLogger::class)->apiMessage($request->appId);
         }
 
         return $request->json()->all();

@@ -79,7 +79,7 @@ class HttpStatisticsLogger implements StatisticsLogger
             $this
                 ->browser
                 ->post(
-                    resolve('url')->route('statistics'),
+                    app('url')->route('statistics'),
                     ['Content-Type' => 'application/json'],
                     stream_for(json_encode($postData))
                 );
