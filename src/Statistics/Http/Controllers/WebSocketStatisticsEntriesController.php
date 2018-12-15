@@ -5,9 +5,8 @@ namespace BeyondCode\LaravelWebSockets\Statistics\Http\Controllers;
 use Illuminate\Http\Request;
 use BeyondCode\LaravelWebSockets\Statistics\Rules\AppId;
 use BeyondCode\LaravelWebSockets\Statistics\Events\StatisticsUpdated;
-use Laravel\Lumen\Routing\Controller as BaseController;
 
-class WebSocketStatisticsEntriesController extends BaseController
+class WebSocketStatisticsEntriesController
 {
     public function store(Request $request)
     {
