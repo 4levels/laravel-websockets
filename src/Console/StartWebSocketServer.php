@@ -7,15 +7,13 @@ use Clue\React\Buzz\Browser;
 use Illuminate\Console\Command;
 use React\EventLoop\Factory as LoopFactory;
 use BeyondCode\LaravelWebSockets\Statistics\DnsResolver;
-use BeyondCode\LaravelWebSockets\Facades\StatisticsLogger;
-use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use BeyondCode\LaravelWebSockets\Server\Logger\HttpLogger;
 use BeyondCode\LaravelWebSockets\Server\WebSocketServerFactory;
 use BeyondCode\LaravelWebSockets\Server\Logger\ConnectionLogger;
 use BeyondCode\LaravelWebSockets\Server\Logger\WebsocketsLogger;
 use BeyondCode\LaravelWebSockets\WebSockets\Channels\ChannelManager;
 use BeyondCode\LaravelWebSockets\Statistics\Logger\HttpStatisticsLogger;
-use BeyondCode\LaravelWebSockets\Statistics\Logger\StatisticsLogger as StatisticsLoggerInterface;
+use BeyondCode\LaravelWebSockets\Statistics\Logger\StatisticsLogger;
 
 class StartWebSocketServer extends Command
 {
@@ -56,12 +54,12 @@ class StartWebSocketServer extends Command
 
         $browser = new Browser($this->loop, $connector);
 
-        app()->singleton(StatisticsLoggerInterface::class, function () use ($browser) {
+        app()->singleton(StatisticsLogger::class, function () use ($browser) {
             return new HttpStatisticsLogger(app(ChannelManager::class), $browser);
         });
 
         $this->loop->addPeriodicTimer(config('websockets.statistics.interval_in_seconds'), function () {
-            StatisticsLogger::save();
+            app(StatisticsLogger::class)->save();
         });
 
         return $this;
@@ -102,7 +100,7 @@ class StartWebSocketServer extends Command
 
     protected function registerEchoRoutes()
     {
-        WebSocketsRouter::echo();
+        app('websockets.router')->echo();
 
         return $this;
     }
@@ -111,7 +109,7 @@ class StartWebSocketServer extends Command
     {
         $this->info("Starting the WebSocket server on port {$this->option('port')}...");
 
-        $routes = WebSocketsRouter::getRoutes();
+        $routes = app('websockets.router')->getRoutes();
 
         /* 🛰 Start the server 🛰  */
         (new WebSocketServerFactory())
